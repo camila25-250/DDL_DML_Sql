@@ -84,3 +84,116 @@ SELECT nombre, precio * 0.8946 AS precio_euros FROM producto WHERE precio * 0.89
 ORDER BY precio * 0.8946 desc;
 SELECT nombre, precio * 0.8946 AS precio_euros FROM producto WHERE precio * 0.8946 >= 180 
 ORDER BY nombre asc;
+
+/*-----------------------------------------------------------------------------------------------------------------*/
+/*Consultas multitabla(COMPOSICION INTERNA)*/
+#1
+SELECT p.nombre, p.precio, f.nombre FROM producto as p
+JOIN fabricante as f on f.codigo = p.codigo_fabricante;
+#2
+SELECT  f.nombre, p.nombre, p.precio FROM producto as p
+JOIN fabricante as f on f.codigo = p.codigo_fabricante ORDER BY f.nombre ASC;
+#3
+SELECT p.codigo , p.nombre as nombre_producto, f.codigo, f.nombre as nombre_fabricante FROM producto as p
+JOIN fabricante as f on f.codigo = p.codigo_fabricante;
+#4
+SELECT p.nombre, p.precio, f.nombre as nombre_fabricante FROM producto as p
+JOIN fabricante as f on f.codigo = p.codigo_fabricante ORDER BY precio asc limit 1;
+#5
+SELECT p.nombre, p.precio, f.nombre as nombre_fabricante FROM producto as p
+JOIN fabricante as f on f.codigo = p.codigo_fabricante ORDER BY precio desc limit 1;
+#6
+SELECT f.nombre as nombre_fabricante, p.nombre FROM producto as p
+JOIN fabricante as f on f.codigo = p.codigo_fabricante WHERE f.nombre ="Lenovo";
+#7
+SELECT f.nombre as nombre_fabricante, p.nombre, p.precio * 0.8946 as precio_euros FROM producto as p
+JOIN fabricante as f on f.codigo = p.codigo_fabricante WHERE f.nombre ="Crucial" and precio * 0.8946 > 200;
+#8
+SELECT p.nombre, f.nombre as nombre_fabricante FROM producto as p
+JOIN fabricante as f on f.codigo = p.codigo_fabricante WHERE f.nombre = "Asus" OR f.nombre ="Hewlett-Packard" OR f.nombre = "Seagate";
+#9
+SELECT p.nombre, f.nombre as nombre_fabricante FROM producto as p
+JOIN fabricante as f on f.codigo = p.codigo_fabricante WHERE f.nombre IN ("Asus","Hewlett-Packard","Seagate");
+#10
+SELECT p.nombre, f.nombre as nombre_fabricante FROM producto as p
+JOIN fabricante as f on f.codigo = p.codigo_fabricante WHERE F.nombre LIKE '%e';
+#11
+SELECT p.nombre, f.nombre as nombre_fabricante FROM producto as p
+JOIN fabricante as f on f.codigo = p.codigo_fabricante WHERE F.nombre LIKE '%w%';
+#12
+SELECT f.nombre as nombre_fabricante, p.nombre, p.precio * 0.8946 as precio_euros FROM producto as p
+JOIN fabricante as f on f.codigo = p.codigo_fabricante WHERE precio * 0.8946 >= 180 ORDER BY precio ASC;
+
+
+SELECT f.nombre as nombre_fabricante, p.nombre, p.precio * 0.8946 as precio_euros FROM producto as p
+JOIN fabricante as f on f.codigo = p.codigo_fabricante WHERE precio * 0.8946 >= 180 ORDER BY precio DESC;
+#13
+SELECT p.codigo_fabricante, f.nombre FROM producto as p
+JOIN fabricante as f on f.codigo = p.codigo_fabricante;
+
+/*-----------------------------------------------------------------------------------------------------------------*/
+/*Consultas multitabla (COMPOSICION EXTERNA)*/
+#1
+SELECT f.nombre as nombre_fabricante , p.nombre FROM fabricante as f
+LEFT JOIN producto as p on f.codigo = p.codigo_fabricante ORDER BY f.nombre;
+#2
+SELECT f.nombre as fabricante FROM fabricante as f
+LEFT JOIN producto as p on f.codigo = p.codigo_fabricante where p.codigo_fabricante is null;
+#3
+
+
+/*-----------------------------------------------------------------------------------------------------------------*/
+/*Consultas Resumen*/
+#1
+SELECT  count(*)  FROM producto;
+#2
+SELECT  count(*)  FROM fabricante;
+#3
+SELECT count(DISTINCT codigo_fabricante)  FROM producto;
+#4
+SELECT AVG(precio) FROM producto;
+#5
+SELECT precio  FROM producto 
+ORDER BY precio asc limit 1;
+#6
+SELECT precio  FROM producto 
+ORDER BY precio desc limit 1;
+#7
+SELECT nombre, precio FROM producto 
+ORDER BY precio asc limit 1;
+#8
+SELECT nombre, precio FROM producto 
+ORDER BY precio desc limit 1;
+#9
+SELECT SUM(precio)  FROM producto;
+#10
+SELECT COUNT(p.codigo) FROM producto as p
+JOIN fabricante as f on p.codigo_fabricante = f.codigo WHERE f.nombre = 'Asus';
+#11
+SELECT AVG(p.precio)  FROM producto as p
+JOIN fabricante as f on p.codigo_fabricante = f.codigo WHERE f.nombre = 'Asus';
+#12
+SELECT p.precio  FROM producto as p
+JOIN fabricante as f on p.codigo_fabricante = f.codigo WHERE f.nombre ='Asus'
+ORDER BY precio asc limit 1;
+#13
+SELECT p.precio FROM producto as p
+JOIN fabricante as f on p.codigo_fabricante = f.codigo WHERE f.nombre = 'Asus'
+ORDER BY precio desc limit 1;
+#14
+SELECT SUM(p.precio) FROM producto as p
+JOIN fabricante as f on p.codigo_fabricante = f.codigo WHERE f.nombre = 'Asus';
+#15
+SELECT p.precio FROM producto as p
+JOIN fabricante as f on p.codigo_fabricante = f.codigo WHERE f.nombre ='Crucial'
+ORDER BY precio desc limit 1;
+
+SELECT p.precio FROM producto as p
+JOIN fabricante as f on p.codigo_fabricante = f.codigo WHERE f.nombre ='Crucial'
+ORDER BY precio asc limit 1;
+
+SELECT AVG(p.precio) FROM producto as p
+JOIN fabricante as f on p.codigo_fabricante = f.codigo WHERE f.nombre ='Crucial';
+
+SELECT count(p.precio) FROM producto as p
+JOIN fabricante as f on p.codigo_fabricante = f.codigo WHERE f.nombre = 'Crucial'

@@ -17,7 +17,7 @@ END$$
 
 DELIMITER ;
 ;
-
+/*-------------------------------------------------------------------------------*/
 USE `tienda`;
 DROP procedure IF EXISTS `producto`;
 
