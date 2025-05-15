@@ -18,3 +18,5 @@ nombre varchar(100)
 ALTER TABLE producto
 ADD CONSTRAINT FK_codigo_fabricant
 FOREIGN KEY (codigo_fabricante) REFERENCES fabricante(codigo); 
+
+/*Prueba bonita*/
