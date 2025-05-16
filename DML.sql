@@ -122,11 +122,10 @@ SELECT p.nombre, f.nombre FROM producto as p
 JOIN fabricante as f on f.codigo = p.codigo_fabricante WHERE F.nombre LIKE '%w%';
 #12
 SELECT f.nombre, p.nombre, p.precio * 0.8946 FROM producto as p
-JOIN fabricante as f on f.codigo = p.codigo_fabricante WHERE precio * 0.8946 >= 180 ORDER BY precio ASC;
-
+JOIN fabricante as f on f.codigo = p.codigo_fabricante WHERE precio * 0.8946 >= 180 ORDER BY precio DESC;
 
 SELECT f.nombre, p.nombre, p.precio * 0.8946 FROM producto as p
-JOIN fabricante as f on f.codigo = p.codigo_fabricante WHERE precio * 0.8946 >= 180 ORDER BY precio DESC;
+JOIN fabricante as f on f.codigo = p.codigo_fabricante WHERE precio * 0.8946 >= 180 ORDER BY f.nombre ASC;
 #13
 SELECT p.codigo_fabricante, f.nombre FROM producto as p
 JOIN fabricante as f on f.codigo = p.codigo_fabricante;
@@ -140,7 +139,10 @@ LEFT JOIN producto as p on f.codigo = p.codigo_fabricante ORDER BY f.nombre;
 SELECT f.nombre FROM fabricante as f
 LEFT JOIN producto as p on f.codigo = p.codigo_fabricante where p.codigo_fabricante is null;
 #3
-/*R: No, pueden existir productos que no esten relacionados con un fabricante por que en la tabla producto esta el campo "codigo_fabricante", que es una llave foránea que hace referencia al campo "codigo" de la tabla fabricante y en la relacion de estas dos tablas se establece que un fabricante puede tener muchos productos pero un producto debe tener un solo fabricante, por lo tanto cada producto debe de tener un fabricante ya existente.*/
+/*R: No, pueden existir productos que no esten relacionados con un fabricante por que en la tabla producto esta el campo "codigo_fabricante", 
+que es una llave foránea que hace referencia al campo "codigo" de la tabla fabricante y en la relacion de estas dos tablas se establece que un 
+fabricante puede tener muchos productos pero un producto debe tener un solo fabricante, por lo tanto cada producto debe de tener un fabricante 
+ya existente.*/
 
 /*-----------------------------------------------------------------------------------------------------------------*/
 /*Consultas Resumen*/
@@ -159,11 +161,11 @@ ORDER BY precio asc limit 1;
 SELECT precio  FROM producto 
 ORDER BY precio desc limit 1;
 #7
-SELECT nombre, precio FROM producto 
-ORDER BY precio asc limit 1;
+SELECT nombre, MIN(precio) FROM producto 
+ORDER BY precio;
 #8
-SELECT nombre, precio FROM producto 
-ORDER BY precio desc limit 1;
+SELECT nombre, MAX(precio) FROM producto 
+ORDER BY precio ;
 #9
 SELECT SUM(precio)  FROM producto;
 #10
@@ -173,27 +175,99 @@ JOIN fabricante as f on p.codigo_fabricante = f.codigo WHERE f.nombre = 'Asus';
 SELECT AVG(p.precio)  FROM producto as p
 JOIN fabricante as f on p.codigo_fabricante = f.codigo WHERE f.nombre = 'Asus';
 #12
-SELECT p.precio  FROM producto as p
+SELECT MIN(p.precio)  FROM producto as p
 JOIN fabricante as f on p.codigo_fabricante = f.codigo WHERE f.nombre ='Asus'
-ORDER BY precio asc limit 1;
+ORDER BY precio ;
 #13
-SELECT p.precio FROM producto as p
+SELECT MAX(p.precio) FROM producto as p
 JOIN fabricante as f on p.codigo_fabricante = f.codigo WHERE f.nombre = 'Asus'
-ORDER BY precio desc limit 1;
+ORDER BY precio;
 #14
 SELECT SUM(p.precio) FROM producto as p
 JOIN fabricante as f on p.codigo_fabricante = f.codigo WHERE f.nombre = 'Asus';
 #15
-SELECT p.precio FROM producto as p
+SELECT MAX(p.precio) FROM producto as p
 JOIN fabricante as f on p.codigo_fabricante = f.codigo WHERE f.nombre ='Crucial'
-ORDER BY precio desc limit 1;
+ORDER BY precio;
 
-SELECT p.precio FROM producto as p
+SELECT MIN(p.precio) FROM producto as p
 JOIN fabricante as f on p.codigo_fabricante = f.codigo WHERE f.nombre ='Crucial'
-ORDER BY precio asc limit 1;
+ORDER BY precio;
 
 SELECT AVG(p.precio) FROM producto as p
 JOIN fabricante as f on p.codigo_fabricante = f.codigo WHERE f.nombre ='Crucial';
 
-SELECT count(p.precio) FROM producto as p
-JOIN fabricante as f on p.codigo_fabricante = f.codigo WHERE f.nombre = 'Crucial'
+SELECT COUNT(p.precio) FROM producto as p
+JOIN fabricante as f on p.codigo_fabricante = f.codigo WHERE f.nombre = 'Crucial';
+#16
+SELECT COUNT(p.codigo), f.nombre  FROM fabricante as f
+LEFT JOIN producto as p on p.codigo_fabricante = f.codigo GROUP BY f.nombre ORDER BY count(p.codigo) DESC; 
+#17
+SELECT f.nombre, MAX(p.precio) FROM producto as p
+JOIN fabricante as f on p.codigo_fabricante = f.codigo GROUP BY f.nombre ORDER BY f.nombre;
+
+SELECT f.nombre, MIN(p.precio) FROM producto as p
+JOIN fabricante as f on p.codigo_fabricante = f.codigo GROUP BY f.nombre ORDER BY f.nombre;
+
+SELECT f.nombre, AVG(p.precio) FROM producto as p
+JOIN fabricante as f on p.codigo_fabricante = f.codigo GROUP BY f.nombre ORDER BY f.nombre;
+#18
+SELECT f.codigo, MAX(p.precio * 0.8946), MIN(p.precio * 0.8946) , AVG(p.precio * 0.8946), COUNT(p.codigo) FROM producto as p
+JOIN fabricante as f on p.codigo_fabricante = f.codigo GROUP BY f.codigo HAVING AVG(p.precio * 0.8946 )> 200 ORDER BY f.codigo;
+#19
+SELECT f.nombre, MAX(p.precio * 0.8946), MIN(p.precio * 0.8946) , AVG(p.precio * 0.8946), COUNT(p.codigo) FROM producto as p
+JOIN fabricante as f on p.codigo_fabricante = f.codigo GROUP BY f.nombre HAVING AVG(p.precio * 0.8946 )> 200 ORDER BY f.nombre;
+#20
+SELECT COUNT(precio* 0.8946) FROM producto WHERE precio * 0.8946>= 180;
+#21
+SELECT f.nombre, COUNT(precio* 0.8946) FROM producto as p
+JOIN fabricante as f on p.codigo_fabricante = f.codigo  WHERE precio * 0.8946>= 180 GROUP BY f.nombre;
+#22
+SELECT f.codigo, AVG(p.precio) FROM producto as p
+JOIN fabricante as f on p.codigo_fabricante = f.codigo GROUP BY f.codigo;
+#23
+SELECT f.nombre, AVG(p.precio) FROM producto as p
+JOIN fabricante as f on p.codigo_fabricante = f.codigo GROUP BY f.nombre;
+#24
+SELECT f.nombre, AVG(p.precio * 0.8946) FROM producto as p
+JOIN fabricante as f on p.codigo_fabricante = f.codigo GROUP BY f.nombre HAVING AVG(p.precio * 0.8946 )>= 150 ORDER BY f.nombre;
+#25
+SELECT f.nombre FROM fabricante as f
+JOIN producto as p  on p.codigo_fabricante = f.codigo GROUP BY f.nombre HAVING COUNT(p.codigo)>=2;
+#26
+SELECT f.nombre, COUNT(precio* 0.8946) FROM producto as p
+JOIN fabricante as f on p.codigo_fabricante = f.codigo WHERE precio * 0.8946>= 220 GROUP BY f.nombre DESC;
+#27
+SELECT f.nombre, COUNT(CASE WHEN precio* 0.8946>= 220 THEN 1 END) as total FROM producto as p
+RIGHT JOIN fabricante as f on p.codigo_fabricante = f.codigo GROUP BY f.nombre ORDER BY total DESC;
+#28
+SELECT f.nombre, COUNT(precio* 0.8946) FROM producto as p
+JOIN fabricante as f on p.codigo_fabricante = f.codigo GROUP BY p.precio HAVING SUM(precio) >700;
+#29
+SELECT p.nombre, MAX(p.precio), f.nombre FROM producto as p
+JOIN fabricante as f on p.codigo_fabricante = f.codigo GROUP BY f.nombre ORDER BY f.nombre ASC;
+
+/*-----------------------------------------------------------------------------------------------------------------*/
+/*Subconsultas(En La Claúsula WHERE)*/
+
+/*Con operadores básicos de comparación*/
+#1
+SELECT p.nombre FROM producto as p
+WHERE p.codigo_fabricante = (SELECT f.codigo FROM fabricante as f WHERE f.nombre = 'Lenovo');
+#2
+SELECT * FROM producto as p
+WHERE p.precio = (SELECT MAX(p.precio) FROM fabricante as f, producto as p WHERE p.codigo_fabricante = f.codigo AND f.nombre='Lenovo');
+#3
+SELECT p.nombre FROM producto as p
+WHERE p.precio =(SELECT MAX(p.precio) FROM fabricante as f, producto as p WHERE p.codigo_fabricante = f.codigo AND f.nombre ='Lenovo');
+#4
+SELECT p.nombre FROM producto as p
+WHERE p.precio =(SELECT MIN(p.precio) FROM fabricante as f, producto as p WHERE p.codigo_fabricante = f.codigo AND f.nombre ='Hewlett-Packard');
+#5
+SELECT p.nombre FROM producto as p
+WHERE p.precio >= (SELECT MAX(p.precio) FROM fabricante as f, producto as p WHERE p.codigo_fabricante = f.codigo AND f.nombre='Lenovo');
+#6
+SELECT p.nombre FROM producto as p
+WHERE p.precio > (SELECT AVG(p.precio) FROM fabricante as f, producto as p WHERE p.codigo_fabricante = f.codigo AND f.nombre='Asus');
+#6
+
