@@ -139,10 +139,10 @@ LEFT JOIN producto as p on f.codigo = p.codigo_fabricante ORDER BY f.nombre;
 SELECT f.nombre FROM fabricante as f
 LEFT JOIN producto as p on f.codigo = p.codigo_fabricante where p.codigo_fabricante is null;
 #3
-/*R: No, pueden existir productos que no esten relacionados con un fabricante por que en la tabla producto esta el campo "codigo_fabricante", 
-que es una llave foránea que hace referencia al campo "codigo" de la tabla fabricante y en la relacion de estas dos tablas se establece que un 
-fabricante puede tener muchos productos pero un producto debe tener un solo fabricante, por lo tanto cada producto debe de tener un fabricante 
-ya existente.*/
+/*R: Pueden existir productos que no estén relacionados con un fabricante, pero solo si el campo que tiene la llave foránea, en este caso "codigo_fabricante" 
+si no tiene una restricción con NOT NULL. En este caso al usar un INSERT INTO, sería posible insertar un producto sin fabricante. En cambio, cuando se utiliza 
+un procedimiento almacenado normalmente ya incluye validaciones internas que no permiten hacer el registro un producto sin un fabricante existente. Por eso, aunque 
+un INSERT INTO podría permitirlo si no hay restricciones, un procedimiento almacenado correctamente implementado no lo permitiría.*/
 
 /*-----------------------------------------------------------------------------------------------------------------*/
 /*Consultas Resumen*/
@@ -299,3 +299,23 @@ WHERE EXISTS (SELECT 1 FROM producto as p WHERE p.codigo_fabricante = f.codigo);
 #14
 SELECT f.nombre FROM fabricante as f
 WHERE NOT EXISTS (SELECT 1 FROM producto as p WHERE p.codigo_fabricante = f.codigo);
+
+/*Subconsulta correlacionadas*/
+#15
+SELECT f.nombre, p.nombre, p.precio FROM producto as p
+JOIN fabricante as f on p.codigo_fabricante = f.codigo 
+WHERE (p.precio, f.codigo) IN (SELECT MAX(precio), codigo_fabricante FROM producto GROUP BY codigo_fabricante);
+#16
+SELECT f.nombre, p.nombre, p.precio FROM producto as p
+JOIN fabricante as f on p.codigo_fabricante = f.codigo 
+WHERE p.precio >= (SELECT AVG(precio) as media FROM producto as pr WHERE pr.codigo_fabricante = p.codigo_fabricante);
+#17
+SELECT p.nombre,p.precio FROM producto as p
+JOIN fabricante as f on p.codigo_fabricante = f.codigo
+WHERE f.nombre = 'Lenovo' AND p.precio = (SELECT MAX(p.precio) FROM producto as p JOIN fabricante as f on p.codigo_fabricante = f.codigo WHERE f.nombre = 'Lenovo');
+
+/*Subconsulta (en la clausula HAVING)*/
+#18
+SELECT f.nombre FROM fabricante as f
+JOIN producto as p on p.codigo_fabricante = f.codigo GROUP BY f.nombre
+HAVING COUNT(p.codigo_fabricante) = (SELECT COUNT(p.nombre) FROM producto as p JOIN fabricante as f on codigo_fabricante = f.codigo WHERE f.nombre = 'Lenovo');
