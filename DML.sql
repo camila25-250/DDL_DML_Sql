@@ -235,7 +235,7 @@ JOIN fabricante as f on p.codigo_fabricante = f.codigo GROUP BY f.nombre HAVING 
 SELECT f.nombre FROM fabricante as f
 JOIN producto as p  on p.codigo_fabricante = f.codigo GROUP BY f.nombre HAVING COUNT(p.codigo)>=2;
 #26
-SELECT f.nombre, COUNT(precio* 0.8946) FROM producto as p
+SELECT f.nombre, COUNT(precio* 0.8946) as total FROM producto as p
 JOIN fabricante as f on p.codigo_fabricante = f.codigo WHERE precio * 0.8946>= 220 GROUP BY f.nombre DESC;
 #27
 SELECT f.nombre, COUNT(CASE WHEN precio* 0.8946>= 220 THEN 1 END) as total FROM producto as p
@@ -258,16 +258,44 @@ WHERE p.codigo_fabricante = (SELECT f.codigo FROM fabricante as f WHERE f.nombre
 SELECT * FROM producto as p
 WHERE p.precio = (SELECT MAX(p.precio) FROM fabricante as f, producto as p WHERE p.codigo_fabricante = f.codigo AND f.nombre='Lenovo');
 #3
-SELECT p.nombre FROM producto as p
+SELECT p.nombre,p.precio FROM producto as p
 WHERE p.precio =(SELECT MAX(p.precio) FROM fabricante as f, producto as p WHERE p.codigo_fabricante = f.codigo AND f.nombre ='Lenovo');
 #4
-SELECT p.nombre FROM producto as p
+SELECT p.nombre,p.precio FROM producto as p
 WHERE p.precio =(SELECT MIN(p.precio) FROM fabricante as f, producto as p WHERE p.codigo_fabricante = f.codigo AND f.nombre ='Hewlett-Packard');
 #5
-SELECT p.nombre FROM producto as p
+SELECT p.nombre,p.precio FROM producto as p
 WHERE p.precio >= (SELECT MAX(p.precio) FROM fabricante as f, producto as p WHERE p.codigo_fabricante = f.codigo AND f.nombre='Lenovo');
 #6
 SELECT p.nombre FROM producto as p
 WHERE p.precio > (SELECT AVG(p.precio) FROM fabricante as f, producto as p WHERE p.codigo_fabricante = f.codigo AND f.nombre='Asus');
-#6
 
+/*Subconsultas con ALL y ANY*/
+#7
+SELECT p.nombre FROM producto as p 
+WHERE p.precio >= ALL (SELECT precio FROM producto);
+#8
+SELECT p.nombre FROM producto as p 
+WHERE p.precio <= ALL (SELECT precio FROM producto);
+#9
+SELECT f.nombre FROM fabricante as f
+WHERE f.codigo = ANY (SELECT codigo_fabricante FROM producto);
+#10
+SELECT f.nombre FROM fabricante as f
+WHERE f.codigo <> ALL (SELECT codigo_fabricante FROM producto);
+
+/*Subconsultas con IN y NOT IN*/
+#11
+SELECT f.nombre FROM fabricante as f
+WHERE f.codigo IN (SELECT codigo_fabricante FROM producto);
+#12
+SELECT f.nombre FROM fabricante as f
+WHERE f.codigo NOT IN (SELECT codigo_fabricante FROM producto);
+
+/*Subconsulta con EXISTS y NOT EXISTS*/
+#13
+SELECT f.nombre FROM fabricante as f
+WHERE EXISTS (SELECT 1 FROM producto as p WHERE p.codigo_fabricante = f.codigo);
+#14
+SELECT f.nombre FROM fabricante as f
+WHERE NOT EXISTS (SELECT 1 FROM producto as p WHERE p.codigo_fabricante = f.codigo);
