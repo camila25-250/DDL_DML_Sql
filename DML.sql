@@ -140,9 +140,9 @@ SELECT f.nombre FROM fabricante as f
 LEFT JOIN producto as p on f.codigo = p.codigo_fabricante where p.codigo_fabricante is null;
 #3
 /*R: Pueden existir productos que no estén relacionados con un fabricante, pero solo si el campo que tiene la llave foránea, en este caso "codigo_fabricante" 
-si no tiene una restricción con NOT NULL. En este caso al usar un INSERT INTO, sería posible insertar un producto sin fabricante. En cambio, cuando se utiliza 
-un procedimiento almacenado normalmente ya incluye validaciones internas que no permiten hacer el registro un producto sin un fabricante existente. Por eso, aunque 
-un INSERT INTO podría permitirlo si no hay restricciones, un procedimiento almacenado correctamente implementado no lo permitiría.*/
+no tiene una restricción NOT NULL. En este caso al usar un INSERT INTO, sería posible insertar un producto sin fabricante. En cambio, cuando se utiliza un procedimiento 
+almacenado normalmente ya incluye validaciones internas que no permiten hacer el registro de un producto sin un fabricante existente. Por eso, aunque un INSERT INTO podría 
+permitirlo si no hay restricciones, un procedimiento almacenado correctamente implementado no lo permitiría.*/
 
 /*-----------------------------------------------------------------------------------------------------------------*/
 /*Consultas Resumen*/
